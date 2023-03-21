@@ -4,7 +4,7 @@ import sys
 
 pygame.init()
 
-size = (600, 600)
+size = (800, 800)
 screen = pygame.display.set_mode(size)
 clock = pygame.time.Clock()
 
@@ -21,15 +21,21 @@ class Particle:
         self.y += self.yv
 
         # Check for boundary conditions
-        if self.x <= 0 or self.x >= size[0]: self.xv -= self.xv
-        if self.y <= 0 or self.y >= size[1]: self.yv-= self.yv
+        # if self.x <= 0 or self.x >= size[0]: self.xv -= self.xv
+        # if self.y <= 0 or self.y >= size[1]: self.yv-= self.yv
+
+        if self.x <= 0 or self.x >= size[0]:
+            self.xv = -self.xv
+        if self.y <= 0 or self.y >= size[1]:
+            self.yv = -self.yv
 
         # Velocity decay
-        self.xv *= 0.9
-        self.xv *= 0.9
+        self.xv *= 0.99
+        self.yv *= 0.99
 
     def draw(self, screen):
-        pygame.draw.circle(screen, self.color, (max(0, int(self.x)), int(self.y)), 5)
+        # pygame.draw.circle(screen, self.color, (max(0, int(self.x)), int(self.y)), 5)
+        pygame.draw.circle(screen, self.color, (int(self.x), int(self.y)), 5)
 
 # Store particles
 Particles = []
