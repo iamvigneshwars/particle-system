@@ -4,10 +4,11 @@ import sys
 
 pygame.init()
 
-size = (800, 800)
+size = (600, 600)
 screen = pygame.display.set_mode(size)
 font = pygame.font.Font(None, 20)
 clock = pygame.time.Clock()
+pygame.display.set_caption("Particle System")
 
 class Particle:
     def __init__(self, x, y):
