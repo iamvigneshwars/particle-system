@@ -6,6 +6,7 @@ pygame.init()
 
 size = (800, 800)
 screen = pygame.display.set_mode(size)
+font = pygame.font.Font(None, 20)
 clock = pygame.time.Clock()
 
 class Particle:
@@ -33,9 +34,8 @@ class Particle:
         self.xv *= 0.99
         self.yv *= 0.99
 
-    def draw(self, screen):
-        # pygame.draw.circle(screen, self.color, (max(0, int(self.x)), int(self.y)), 5)
-        pygame.draw.circle(screen, self.color, (int(self.x), int(self.y)), 5)
+    def draw(self):
+        pygame.draw.circle(screen, self.color, (max(0, int(self.x)), max(0,int(self.y))), 5)
 
 # Store particles
 Particles = []
@@ -52,6 +52,11 @@ while True:
         if event.type == pygame.QUIT:
             sys.exit()
 
+        # if event.type == pygame.MOUSEMOTION:
+        #     particle = Particle(*pygame.mouse.get_pos())
+        #     Particles.append(particle)
+
+
     # Clear previous screen
     screen.fill((0, 0, 0))
 
@@ -61,7 +66,10 @@ while True:
     
     for particle in Particles:
         particle.move()
-        particle.draw(screen)
+        particle.draw()
+
+    text_surf = font.render(f"Particles: {len(Particles)}", False, 'Green').convert()
+    screen.blit(text_surf, (10, 10))
 
     pygame.display.update()
     clock.tick(60)
