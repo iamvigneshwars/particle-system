@@ -5,15 +5,14 @@ import sys
 
 pygame.init()
 
-SIZE = (800, 600)
+SIZE = (600, 400)
 FPS = 60
 
 screen = pygame.display.set_mode(SIZE)
 clock = pygame.time.Clock()
 font = pygame.font.Font(None, 15)
 
-# target = (450, 230)
-target = (400, 300)
+target = (450, 230)
 
 class Particle:
     def __init__(self, x, y):
@@ -25,14 +24,22 @@ class Particle:
         self.life = 120
 
     def move(self):
-
         dx = target[0] - self.x
         dy = target[1] - self.y
         distance = math.sqrt(dx**2 + dy**2)
 
         if distance > 0:
-            self.xv += dx / distance * 0.9
-            self.yv += dy / distance * 0.9
+            self.xv += dx / distance * 0.1
+            self.yv += dy / distance * 0.1
+
+        # Add obstacle avoidance
+        for obstacle in obstacles:
+            if obstacle.collidepoint(self.x, self.y):
+                # Calculate the angle to the obstacle
+                angle = math.atan2(self.y - obstacle.centery, self.x - obstacle.centerx)
+                # Move in the opposite direction
+                self.xv += math.cos(angle) * 0.5
+                self.yv += math.sin(angle) * 0.5
 
         self.x += self.xv
         self.y += self.yv 
@@ -42,7 +49,6 @@ class Particle:
 
         self.xv *= 0.999
         self.yv *= 0.999
-        # self.life -= 1
 
         if distance < 50: 
             self.life = 0
@@ -52,6 +58,7 @@ class Particle:
 
 
 particles = []
+obstacles = [pygame.Rect(200, 100, 100, 100), pygame.Rect(350, 200, 100, 100)]
 
 while True:
 
@@ -65,10 +72,9 @@ while True:
 
     particles = [part for part in particles if part.life > 0]
 
-    for _ in range(10):
-        x_pos = random.randint(0, 800)
-        y_pos = random.randint(0, 600)
-        particles.append(Particle(x_pos, y_pos))
+    x_pos = random.randint(0, 600)
+    y_pos = random.randint(0, 400)
+    particles.append(Particle(x_pos, y_pos))
         
     screen.fill('Black')
 
@@ -76,7 +82,10 @@ while True:
         part.move()
         part.draw()
 
-    target_surf = pygame.draw.circle(screen, 'Red', target, 10)
+    for obstacle in obstacles:
+        pygame.draw.rect(screen, 'Gray', obstacle)
+
+    target_surf = pygame.draw.circle(screen, 'Red', target, 50)
 
     part_count = font.render(f"Count: {len(particles)}", False, 'White')
     screen.blit(part_count, (20, 20))
