@@ -33,11 +33,21 @@ class Particle:
         if self.y <= 0 or self.y >= size[1]:
             self.yv = -self.yv
 
-        if rectangle.collidepoint((self.x, self.y)):
+        # Define buffer distance
+        buffer_dist = 5
+
+        # Check if particle is colliding with rectangle
+        if rectangle.left - buffer_dist <= self.x <= rectangle.right + buffer_dist and rectangle.top - buffer_dist <= self.y <= rectangle.bottom + buffer_dist:
             angle = math.atan2(self.y - rectangle.centery, self.x - rectangle.centerx)
             # Move in the opposite direction
             self.xv += math.cos(angle) * 0.5
             self.yv += math.sin(angle) * 0.5
+
+        # if rectangle.collidepoint((self.x, self.y)):
+        #     angle = math.atan2(self.y - rectangle.centery, self.x - rectangle.centerx)
+        #     # Move in the opposite direction
+        #     self.xv += math.cos(angle) * 0.5
+        #     self.yv += math.sin(angle) * 0.5
 
         # Velocity decay
         self.xv *= 0.99
