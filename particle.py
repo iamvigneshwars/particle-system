@@ -1,6 +1,7 @@
 import pygame
 import random
 import sys
+import math
 
 pygame.init()
 
@@ -17,6 +18,7 @@ class Particle:
         self.xv = random.uniform(-2, 2)
         self.yv = random.uniform(-2, 2)
         self.color = (random.randint(0, 255), random.randint(0, 255),random.randint(0, 225))
+        self.life = 120
 
     def move(self):
         self.x += self.xv
@@ -31,9 +33,16 @@ class Particle:
         if self.y <= 0 or self.y >= size[1]:
             self.yv = -self.yv
 
+        if rectangle.collidepoint((self.x, self.y)):
+            angle = math.atan2(self.y - rectangle.centery, self.x - rectangle.centerx)
+            # Move in the opposite direction
+            self.xv += math.cos(angle) * 0.5
+            self.yv += math.sin(angle) * 0.5
+
         # Velocity decay
         self.xv *= 0.99
         self.yv *= 0.99
+        self.life -= 1
 
     def draw(self):
         pygame.draw.circle(screen, self.color, (max(0, int(self.x)), max(0,int(self.y))), 5)
@@ -60,10 +69,15 @@ while True:
 
     # Clear previous screen
     screen.fill((0, 0, 0))
-
+    
+    rectangle = pygame.Rect(100, 100, 100, 100)
+    pygame.draw.rect(screen, 'Red', rectangle)
+    
     if pygame.mouse.get_pressed()[0]:
         particle = Particle(*pygame.mouse.get_pos())
         Particles.append(particle)
+
+    Particles = [part for part in Particles if part.life > 0]
     
     for particle in Particles:
         particle.move()
