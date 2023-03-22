@@ -2,7 +2,7 @@ import pygame
 import sys
 pygame.init()
 
-size = (600, 600)
+size = (800, 400)
 screen = pygame.display.set_mode(size)
 pygame.display.set_caption("FPT Testing")
 font = pygame.font.Font(None, 20)
@@ -12,8 +12,8 @@ class Ball:
     def __init__(self, x, y):
         self.x = x
         self.y = y
-        self.vx = 0
-        self.vy = 200
+        self.vx = 200
+        self.vy = 0
         self.color = 'Red'
     
     def move(self, dt):
@@ -29,7 +29,7 @@ class Ball:
     def draw(self):
         pygame.draw.circle(screen, self.color, (self.x, self.y), 10)
 
-ball = Ball(100, 100)
+ball = Ball(100, 200)
 
 while True:
     for event in pygame.event.get():
