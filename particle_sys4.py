@@ -17,11 +17,13 @@ platform_rect = platform_surf.get_rect(midbottom = (400, 400))
 
 obs_cord = pygame.Rect(200, 200, 100, 100)
 
-targets = [
-    {'pos': (400, 400)},
-    {'pos': (200, 200)}, 
-    {'pos': (300, 300)}
-]
+# targets = [
+#     {'pos': (200, 200)},
+#     {'pos': (size[0] - 200, 200)}, 
+#     {'pos': (size[0] // 2, size[1] - 200)}
+# ]
+
+targets = []
 
 radius = 10
 
@@ -60,7 +62,7 @@ class Particle:
     #         velocity -= 2 * dot_product * normal
     #         self.vx, self.vy = velocity.x, velocity.y
 
-    def move(self):
+    def move(self, dt = 1):
 
         distance = sys.maxsize
         dx = 0
@@ -85,8 +87,8 @@ class Particle:
         if self.x < 0 or self.x > size[0] : self.vx *= -1
         if self.y < 0 or self.y > size[1] : self.vy *= -1
 
-        self.x += self.vx 
-        self.y += self.vy 
+        self.x += self.vx * dt
+        self.y += self.vy * dt
 
         self.vx *= 0.99
         self.vy *= 0.99
@@ -128,12 +130,19 @@ while True:
 
                 for target in targets:
                     if target.get('selected', False):
-                        print(target)
                         target['pos']  = (mouse_x + target['offset'][0], mouse_y + target['offset'][1])
+
+        # Add targets or delete targets
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_c and len(targets) < 5:
+                # targets.append({'pos':(size[0] // 2, size[1] //2 )})
+                targets.append({'pos':(pygame.mouse.get_pos())})
+
+            if event.key == pygame.K_d and len(targets):
+                targets.pop() 
 
 
     screen.fill('Grey')
-    dt = clock.tick(60) / 1000.0
 
     # Spawn from edges
     particles.append(Particle(10, 10))
@@ -151,7 +160,6 @@ while True:
     for target in targets:
         pygame.draw.circle(screen, 'Black', target['pos'], radius)
 
-    # print(targets[0], targets[1])
     particles = [particle for particle in particles if particle.life > 0]
     for particle in particles:
         particle.move()
@@ -160,7 +168,7 @@ while True:
     particle_count = font.render(f"Particles: {len(particles)}", False,'White', 'Black')
     screen.blit(particle_count, (450, 20))
 
-
+    clock.tick(60)
     pygame.display.update()
 
 
