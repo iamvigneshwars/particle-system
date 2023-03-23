@@ -11,17 +11,14 @@ fps = 60
 screen = pygame.display.set_mode(size)
 clock  = pygame.time.Clock()
 
-platform_surf = pygame.Surface((600, 100))
-platform_surf.fill('Red')
-platform_rect = platform_surf.get_rect(midbottom = (400, 400))
-
-obs_cord = pygame.Rect(200, 200, 100, 100)
+# platform_surf = pygame.Surface((600, 100))
+# platform_surf.fill('Red')
+# platform_rect = platform_surf.get_rect(midbottom = (400, 400))
+# obs_cord = pygame.Rect(200, 200, 100, 100)
 
 targets = [
     {'pos': (size[0] // 2, size[1] // 2)}
 ]
-
-# targets = []
 
 radius = 10
 
@@ -62,6 +59,7 @@ class Particle:
 
     def move(self):
 
+        # Find the showest target
         distance = sys.maxsize
         dx = 0
         dy = 0
@@ -82,12 +80,15 @@ class Particle:
             self.vx += dx / distance * 0.15
             self.vy += dy / distance * 0.1
 
+        # Bounce off screen edges
         if self.x < 0 or self.x > size[0] : self.vx *= -1
         if self.y < 0 or self.y > size[1] : self.vy *= -1
 
+        # update velocity
         self.x += self.vx 
         self.y += self.vy 
 
+        # Decay particle velocity
         self.vx *= 0.99
         self.vy *= 0.99
 
@@ -109,6 +110,7 @@ while True:
                 sys.exit()
 
 
+        # Click and drag targets
         if event.type == pygame.MOUSEBUTTONDOWN:
             mouse_x, mouse_y = pygame.mouse.get_pos()
             for target in targets:
@@ -140,6 +142,7 @@ while True:
                 targets.pop() 
 
 
+    # Clear previous screen
     screen.fill('Grey')
 
     # Spawn from edges
@@ -158,15 +161,17 @@ while True:
     for target in targets:
         pygame.draw.circle(screen, 'Black', target['pos'], radius)
 
+    # remove dead particles
     particles = [particle for particle in particles if particle.life > 0]
+
+    # Move and draw particles
     for particle in particles:
         particle.move()
         particle.draw()
 
+    # Display particle count
     particle_count = font.render(f"Particles: {len(particles)}", False,'White', 'Black')
     screen.blit(particle_count, (450, 20))
 
     clock.tick(60)
     pygame.display.update()
-
-
