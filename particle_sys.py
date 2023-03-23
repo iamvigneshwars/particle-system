@@ -17,13 +17,11 @@ platform_rect = platform_surf.get_rect(midbottom = (400, 400))
 
 obs_cord = pygame.Rect(200, 200, 100, 100)
 
-# targets = [
-#     {'pos': (200, 200)},
-#     {'pos': (size[0] - 200, 200)}, 
-#     {'pos': (size[0] // 2, size[1] - 200)}
-# ]
+targets = [
+    {'pos': (size[0] // 2, size[1] // 2)}
+]
 
-targets = []
+# targets = []
 
 radius = 10
 
@@ -62,7 +60,7 @@ class Particle:
     #         velocity -= 2 * dot_product * normal
     #         self.vx, self.vy = velocity.x, velocity.y
 
-    def move(self, dt = 1):
+    def move(self):
 
         distance = sys.maxsize
         dx = 0
@@ -81,14 +79,14 @@ class Particle:
             self.life = 0
 
         if distance > 0:
-            self.vx += dx / distance * 0.2
+            self.vx += dx / distance * 0.15
             self.vy += dy / distance * 0.1
 
         if self.x < 0 or self.x > size[0] : self.vx *= -1
         if self.y < 0 or self.y > size[1] : self.vy *= -1
 
-        self.x += self.vx * dt
-        self.y += self.vy * dt
+        self.x += self.vx 
+        self.y += self.vy 
 
         self.vx *= 0.99
         self.vy *= 0.99
@@ -134,7 +132,7 @@ while True:
 
         # Add targets or delete targets
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_c and len(targets) < 5:
+            if event.key == pygame.K_c and len(targets) < 10:
                 # targets.append({'pos':(size[0] // 2, size[1] //2 )})
                 targets.append({'pos':(pygame.mouse.get_pos())})
 
