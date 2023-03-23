@@ -5,7 +5,7 @@ import sys
 
 pygame.init()
 
-size = (800, 600)
+size = (1000, 800)
 fps = 60
 
 screen = pygame.display.set_mode(size)
@@ -16,14 +16,16 @@ platform_surf.fill('Red')
 platform_rect = platform_surf.get_rect(midbottom = (400, 400))
 
 obs_cord = pygame.Rect(200, 200, 100, 100)
-targets = [(400, 400), (200, 200)]
+
 targets = [
     {'pos': (400, 400)},
-    {'pos': (200, 200)}
+    {'pos': (200, 200)}, 
+    {'pos': (300, 300)}
 ]
+
 radius = 10
 
-font = pygame.font.Font(None, 15)
+font = pygame.font.Font(None, 25)
 
 class Particle:
     def __init__(self, x, y):
@@ -77,8 +79,8 @@ class Particle:
             self.life = 0
 
         if distance > 0:
-            self.vx += dx / distance * 0.1
-            self.vy += dy / distance * 0.2
+            self.vx += dx / distance * 0.2
+            self.vy += dy / distance * 0.1
 
         if self.x < 0 or self.x > size[0] : self.vx *= -1
         if self.y < 0 or self.y > size[1] : self.vy *= -1
@@ -133,10 +135,17 @@ while True:
     screen.fill('Grey')
     dt = clock.tick(60) / 1000.0
 
+    # Spawn from edges
     particles.append(Particle(10, 10))
     particles.append(Particle(10, size[1] - 10))
     particles.append(Particle(size[0] - 10, size[1]- 10))
     particles.append(Particle(size[0] - 10, 10))
+
+    # Spawn from top, bottom, left, right
+    particles.append(Particle(10, size[1] // 2))
+    particles.append(Particle(size[0] // 2, 10))
+    particles.append(Particle(size[0] // 2, size[1] - 10))
+    particles.append(Particle(size[0] - 10, size[1]//2))
 
     # Draw targets
     for target in targets:
@@ -148,8 +157,8 @@ while True:
         particle.move()
         particle.draw()
 
-    particle_count = font.render(f"Count: {len(particles)}", False,'Black')
-    screen.blit(particle_count, (380, 20))
+    particle_count = font.render(f"Particles: {len(particles)}", False,'White', 'Black')
+    screen.blit(particle_count, (450, 20))
 
 
     pygame.display.update()
