@@ -29,8 +29,8 @@ class Particle:
         distance = math.sqrt(dx**2 + dy**2)
 
         if distance > 0:
-            self.xv += dx / distance * 0.1
-            self.yv += dy / distance * 0.1
+            self.xv += dx / distance * 0.9
+            self.yv += dy / distance * 0.2
 
         # Add obstacle avoidance
         for obstacle in obstacles:
