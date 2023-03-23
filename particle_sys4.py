@@ -18,6 +18,8 @@ platform_rect = platform_surf.get_rect(midbottom = (400, 400))
 obs_cord = pygame.Rect(200, 200, 100, 100)
 target = (400, 400)
 
+font = pygame.font.Font(None, 15)
+
 class Particle:
     def __init__(self, x, y):
         self.x = max(0, min(x, size[0]))
@@ -84,8 +86,8 @@ class Particle:
             self.life = 0
 
         if distance > 0:
-            self.vx += dx / distance * 0.9
-            self.vy += dy / distance * 0.2
+            self.vx += dx / distance * 0.1
+            self.vy += dy / distance * 0.1
 
         if self.x < 0 or self.x > size[0] : self.vx *= -1
         if self.y < 0 or self.y > size[1] : self.vy *= -1
@@ -120,10 +122,10 @@ while True:
     #     if not obs_cord.collidepoint(pygame.mouse.get_pos()):
     #         particles.append(Particle(*pygame.mouse.get_pos()))
 
-    particles.append(Particle(0, 0))
-    particles.append(Particle(0, size[1]))
-    particles.append(Particle(size[0], size[1]))
-    particles.append(Particle(size[0], 0))
+    particles.append(Particle(10, 10))
+    particles.append(Particle(10, size[1] - 10))
+    particles.append(Particle(size[0] - 10, size[1]- 10))
+    particles.append(Particle(size[0] - 10, 10))
 
     pygame.draw.circle(screen, 'Black', target, 10)
 
@@ -136,6 +138,9 @@ while True:
     for particle in particles:
         particle.move(dt)
         particle.draw()
+
+    particle_count = font.render(f"Count: {len(particles)}", False,'Black')
+    screen.blit(particle_count, (380, 20))
 
 
     pygame.display.update()
