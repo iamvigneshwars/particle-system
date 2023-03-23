@@ -27,9 +27,14 @@ class Particle:
 
     def collision(self):
         if rectangle.colliderect(pygame.Rect(self.x-5, self.y-5, 10, 10)):
+            print("Collision")
             angle = math.atan2(self.y - rectangle.centery, self.x - rectangle.centerx)
-            self.xv += math.cos(angle) * 0.5
-            self.yv += math.sin(angle) * 0.5
+            # self.xv += math.cos(angle) * 0.9
+            # self.yv += math.sin(angle) * 0.9
+            self.xv += math.cos(angle) 
+            self.yv += math.sin(angle) 
+        else:
+            print("NO")
 
 
     def move(self):
@@ -38,9 +43,9 @@ class Particle:
         dy = target[1] - self.y
         distance = math.sqrt(dx**2 + dy**2)
 
-        # if distance > 0:
-        #     self.xv += dx / distance * 0.2
-        #     self.yv += dy / distance * 0.2
+        if distance > 0:
+            self.xv += dx / distance * 0.2
+            self.yv += dy / distance * 0.2
 
         self.x += self.xv
         self.y += self.yv 
