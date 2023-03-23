@@ -5,7 +5,7 @@ import sys
 
 pygame.init()
 
-size = (600, 600)
+size = (800, 600)
 fps = 60
 
 screen = pygame.display.set_mode(size)
@@ -65,20 +65,20 @@ class Particle:
         dy = target[1] - self.y
         distance = math.sqrt(dx**2 + dy**2)
 
-        if self.ret.colliderect(obs_cord):
-            # Calculate the normal vector of the obstacle
-            normal = pygame.math.Vector2(self.x - obs_cord.centerx, self.y - obs_cord.centery).normalize()
+        # if self.ret.colliderect(obs_cord):
+        #     # Calculate the normal vector of the obstacle
+        #     normal = pygame.math.Vector2(self.x - obs_cord.centerx, self.y - obs_cord.centery).normalize()
 
-            # Calculate the particle's velocity vector
-            velocity = pygame.math.Vector2(self.vx, self.vy)
+        #     # Calculate the particle's velocity vector
+        #     velocity = pygame.math.Vector2(self.vx, self.vy)
 
-            # Calculate the dot product of velocity and normal vectors
-            dot_product = velocity.dot(normal)
+        #     # Calculate the dot product of velocity and normal vectors
+        #     dot_product = velocity.dot(normal)
 
-            if dot_product < 0:
-                # Reverse the velocity vector in the direction of the normal vector
-                velocity -= 2 * dot_product * normal
-                self.vx, self.vy = velocity.x, velocity.y
+        #     if dot_product < 0:
+        #         # Reverse the velocity vector in the direction of the normal vector
+        #         velocity -= 2 * dot_product * normal
+        #         self.vx, self.vy = velocity.x, velocity.y
 
         if distance <= 10:
             self.life = 0
@@ -116,11 +116,21 @@ while True:
     screen.fill('Grey')
     dt = clock.tick(60) / 1000.0
 
-    if pygame.mouse.get_pressed()[0]:
-        if not obs_cord.collidepoint(pygame.mouse.get_pos()):
-            particles.append(Particle(*pygame.mouse.get_pos()))
+    # if pygame.mouse.get_pressed()[0]:
+    #     if not obs_cord.collidepoint(pygame.mouse.get_pos()):
+    #         particles.append(Particle(*pygame.mouse.get_pos()))
 
-    pygame.draw.rect(screen, 'Red', obs_cord)
+    particles.append(Particle(0, 0))
+    particles.append(Particle(0, size[1]))
+    particles.append(Particle(size[0], size[1]))
+    particles.append(Particle(size[0], 0))
+
+    pygame.draw.circle(screen, 'Black', target, 10)
+
+    if pygame.mouse.get_pressed()[0]:
+        target = pygame.mouse.get_pos()
+        # print(pygame.mouse.get_pos())
+    # pygame.draw.rect(screen, 'Red', obs_cord)
 
     particles = [particle for particle in particles if particle.life > 0]
     for particle in particles:
