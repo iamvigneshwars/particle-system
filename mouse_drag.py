@@ -1,53 +1,57 @@
 import pygame
 
-# Initialize Pygame
 pygame.init()
 
-# Set up the display
-width = 640
-height = 480
-screen = pygame.display.set_mode((width, height))
-pygame.display.set_caption("Click and Move Circle")
+# Set up the screen
+screen_width = 800
+screen_height = 600
+screen = pygame.display.set_mode((screen_width, screen_height))
+pygame.display.set_caption("Moving Circles")
 
-# Set up the circle
-radius = 20
-x = width // 2
-y = height // 2
-color = (255, 255, 255)
+# Set up the colors
+white = (255, 255, 255)
+red = (255, 0, 0)
+green = (0, 255, 0)
+blue = (0, 0, 255)
 
-# Set up the game loop
+# Set up the circles
+circles = [
+    {'color': red, 'pos': (100, 100), 'radius': 50},
+    {'color': green, 'pos': (200, 200), 'radius': 50},
+    {'color': blue, 'pos': (300, 300), 'radius': 50},
+    {'color': white, 'pos': (400, 400), 'radius': 50},
+]
+
+# Main loop
 running = True
-dragging = False
 while running:
-
     # Handle events
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
         elif event.type == pygame.MOUSEBUTTONDOWN:
-            # Check if the click was inside the circle
-            mouse_x, mouse_y = pygame.mouse.get_pos()
-            if (mouse_x - x) ** 2 + (mouse_y - y) ** 2 <= radius ** 2:
-                dragging = True
-                offset_x = x - mouse_x
-                offset_y = y - mouse_y
+            # Check if the click is inside a circle
+            mouse_pos = pygame.mouse.get_pos()
+            for circle in circles:
+                if ((mouse_pos[0]-circle['pos'][0])**2 + (mouse_pos[1]-circle['pos'][1])**2) < circle['radius']**2:
+                    # Set the circle as selected and remember the offset
+                    circle['selected'] = True
+                    circle['offset'] = (circle['pos'][0]-mouse_pos[0], circle['pos'][1]-mouse_pos[1])
         elif event.type == pygame.MOUSEBUTTONUP:
-            dragging = False
+            # Deselect all circles
+            for circle in circles:
+                circle['selected'] = False
         elif event.type == pygame.MOUSEMOTION:
-            if dragging:
-                # Move the circle
-                mouse_x, mouse_y = pygame.mouse.get_pos()
-                x = mouse_x + offset_x
-                y = mouse_y + offset_y
+            # Move the selected circle
+            mouse_pos = pygame.mouse.get_pos()
+            for circle in circles:
+                if circle.get('selected', False):
+                    circle['pos'] = (mouse_pos[0]+circle['offset'][0], mouse_pos[1]+circle['offset'][1])
 
-    # Fill the screen with black
+    # Draw the circles
     screen.fill((0, 0, 0))
+    for circle in circles:
+        pygame.draw.circle(screen, circle['color'], circle['pos'], circle['radius'])
+    pygame.display.flip()
 
-    # Draw the circle
-    pygame.draw.circle(screen, color, (x, y), radius)
-
-    # Update the screen
-    pygame.display.update()
-
-# Quit Pygame
 pygame.quit()

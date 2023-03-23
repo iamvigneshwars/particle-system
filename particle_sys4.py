@@ -16,9 +16,11 @@ platform_surf.fill('Red')
 platform_rect = platform_surf.get_rect(midbottom = (400, 400))
 
 obs_cord = pygame.Rect(200, 200, 100, 100)
-target_1 = (400, 400)
-target_2 = (200, 200)
 targets = [(400, 400), (200, 200)]
+targets = [
+    {'pos': (400, 400)},
+    {'pos': (200, 200)}
+]
 radius = 10
 
 font = pygame.font.Font(None, 15)
@@ -63,8 +65,8 @@ class Particle:
         dy = 0
 
         for target in targets:
-            dist_x = target[0]- self.x
-            dist_y = target[1] - self.y
+            dist_x = target['pos'][0]- self.x
+            dist_y = target['pos'][1] - self.y
             d = math.sqrt(dist_x ** 2 + dist_y **2)
             if d < distance:
                 distance = d
@@ -104,18 +106,29 @@ while True:
             if event.key == pygame.K_ESCAPE:
                 sys.exit()
 
-        # if event.type == pygame.MOUSEBUTTONDOWN:
-        #     mouse_x, mouse_y = pygame.mouse.get_pos()
-        #     if (mouse_x - target_1[0])**2 + (mouse_y - target_1[1]) ** 2 <= radius **2:
-        #         drag = True
-        #         offset_x = target_1[0] - mouse_x
-        #         offset_y = target_1[1] - mouse_y
-        # elif event.type == pygame.MOUSEBUTTONUP:
-        #     drag = False
-        # elif event.type == pygame.MOUSEMOTION:
-        #     if drag:
-        #         mouse_x, mouse_y = pygame.mouse.get_pos()
-        #         target_1 = (mouse_x + offset_x, mouse_y+ offset_y)
+
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            mouse_x, mouse_y = pygame.mouse.get_pos()
+            for target in targets:
+                if (mouse_x - target['pos'][0])**2 + (mouse_y - target['pos'][1]) ** 2 <= radius **2:
+                    offset_x = target['pos'][0] - mouse_x
+                    offset_y = target['pos'][1] - mouse_y
+                    target['selected'] = True
+                    target['offset'] = (offset_x, offset_y)
+
+        elif event.type == pygame.MOUSEBUTTONUP:
+            # Deselect all circles
+            for target in targets:
+                target['selected'] = False
+
+        elif event.type == pygame.MOUSEMOTION:
+                mouse_x, mouse_y = pygame.mouse.get_pos()
+
+                for target in targets:
+                    if target.get('selected', False):
+                        print(target)
+                        target['pos']  = (mouse_x + target['offset'][0], mouse_y + target['offset'][1])
+
 
     screen.fill('Grey')
     dt = clock.tick(60) / 1000.0
@@ -125,14 +138,11 @@ while True:
     particles.append(Particle(size[0] - 10, size[1]- 10))
     particles.append(Particle(size[0] - 10, 10))
 
-
+    # Draw targets
     for target in targets:
-        pygame.draw.circle(screen, 'Black', target, radius)
+        pygame.draw.circle(screen, 'Black', target['pos'], radius)
 
-    # Targets
-    # pygame.draw.circle(screen, 'Black', target_1, radius)
-    # pygame.draw.circle(screen, 'Black', target_2, radius)
-
+    # print(targets[0], targets[1])
     particles = [particle for particle in particles if particle.life > 0]
     for particle in particles:
         particle.move()
