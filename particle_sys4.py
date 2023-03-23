@@ -16,7 +16,8 @@ platform_surf.fill('Red')
 platform_rect = platform_surf.get_rect(midbottom = (400, 400))
 
 obs_cord = pygame.Rect(200, 200, 100, 100)
-target = (400, 400)
+target_1 = (400, 400)
+target_2 = (200, 200)
 
 font = pygame.font.Font(None, 15)
 
@@ -63,9 +64,23 @@ class Particle:
     #     self.vy *= 0.99
 
     def move(self, dt):
-        dx = target[0] - self.x
-        dy = target[1] - self.y
-        distance = math.sqrt(dx**2 + dy**2)
+        dx_1 = target_1[0] - self.x
+        dy_1 = target_1[1] - self.y
+        d1 = math.sqrt(dx_1**2 + dy_1**2)
+
+        dx_2 = target_2[0] - self.x
+        dy_2 = target_2[1] - self.y
+        d2 = math.sqrt(dx_2**2 + dy_2**2)
+
+        if d1 < d2:
+            dx = dx_1
+            dy = dy_1
+            distance = d1
+        else:
+            dx = dx_2
+            dy = dy_2
+            distance = d2
+
 
         # if self.ret.colliderect(obs_cord):
         #     # Calculate the normal vector of the obstacle
@@ -105,7 +120,7 @@ class Particle:
 
 
 particles = []
-
+drag =False
 while True:
     for event in pygame.event.get():
         # Check for exit conditions
@@ -114,6 +129,22 @@ while True:
         if (event.type == pygame.KEYDOWN):
             if event.key == pygame.K_ESCAPE:
                 sys.exit()
+
+        # if event.type == pygame.MOUSEBUTTONDOWN:
+        #     print("TEST")
+
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            mouse_x, mouse_y = pygame.mouse.get_pos()
+            if (mouse_x - target_1[0])**2 + (mouse_y - target_1[1]) ** 2 <= 10 **2:
+                drag = True
+                offset_x = target_1[0] - mouse_x
+                offset_y = target_1[1] - mouse_y
+        elif event.type == pygame.MOUSEBUTTONUP:
+            drag = False
+        elif event.type == pygame.MOUSEMOTION:
+            if drag:
+                mouse_x, mouse_y = pygame.mouse.get_pos()
+                target_1 = (target_1[0] + offset_x, target_1[1] + offset_y)
 
     screen.fill('Grey')
     dt = clock.tick(60) / 1000.0
@@ -127,13 +158,23 @@ while True:
     particles.append(Particle(size[0] - 10, size[1]- 10))
     particles.append(Particle(size[0] - 10, 10))
 
-    pygame.draw.circle(screen, 'Black', target, 10)
+    pygame.draw.circle(screen, 'Black', target_1, 10)
 
-    if pygame.mouse.get_pressed()[0]:
-        target = pygame.mouse.get_pos()
+    # if pygame.mouse.get_pressed()[0]:
+    #     # check if the click is inside the circle
+    #     mouse_x, mouse_y = pygame.mouse.get_pos()
+    #     if (mouse_x - target_1[0])**2 + (mouse_y - target_1[1]) ** 2 <= 10 **2:
+    #         offset_x = target_1[0] - mouse_x
+    #         offset_y = target_1[1] - mouse_y
+    #         print(offset_y)
+    #         target_1 = (offset_x + mouse_x, offset_y + mouse_y)
+    #         print("TEST")
+
+        # target_1 = pygame.mouse.get_pos()
         # print(pygame.mouse.get_pos())
     # pygame.draw.rect(screen, 'Red', obs_cord)
 
+    
     particles = [particle for particle in particles if particle.life > 0]
     for particle in particles:
         particle.move(dt)
