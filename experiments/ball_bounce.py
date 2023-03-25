@@ -44,7 +44,6 @@ class Ball:
             self.vy += g * dt
         self.x += self.vx * dt
         self.y += self.vy * dt + 0.5 * g * dt ** 2
-        print(self.vy * dt + 0.5 * g * dt ** 2)
 
     def bounce(self, ground):
         if self.y + self.radius >= ground:
@@ -65,7 +64,6 @@ while not done:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             done = True
-
     # Update the ball
     dt = clock.tick(60) / 1000.0
     ball.update(dt)
