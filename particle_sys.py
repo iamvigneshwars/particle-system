@@ -3,28 +3,6 @@ import math
 import random
 import sys
 
-pygame.init()
-
-size = (1000, 800)
-fps = 60
-
-screen = pygame.display.set_mode(size)
-pygame.display.set_caption("Particle System")
-clock  = pygame.time.Clock()
-
-# platform_surf = pygame.Surface((600, 100))
-# platform_surf.fill('Red')
-# platform_rect = platform_surf.get_rect(midbottom = (400, 400))
-# obs_cord = pygame.Rect(200, 200, 100, 100)
-
-targets = [
-    {'pos': (size[0] // 2, size[1] // 2)}
-]
-
-radius = 10
-
-font = pygame.font.Font(None, 25)
-
 class Particle:
     def __init__(self, x, y):
         self.x = max(0, min(x, size[0]))
@@ -78,7 +56,7 @@ class Particle:
             self.life = 0
 
         if distance > 0:
-            self.vx += dx / distance * 0.15
+            self.vx += dx / distance * 0.1
             self.vy += dy / distance * 0.1
 
         # Bounce off screen edges
@@ -98,6 +76,27 @@ class Particle:
         self.ret.center = (self.x, self.y)
         screen.blit(self.surf, self.ret)
 
+pygame.init()
+
+size = (1000, 800)
+fps = 60
+
+screen = pygame.display.set_mode(size)
+pygame.display.set_caption("Particle System")
+clock  = pygame.time.Clock()
+
+# platform_surf = pygame.Surface((600, 100))
+# platform_surf.fill('Red')
+# platform_rect = platform_surf.get_rect(midbottom = (400, 400))
+# obs_cord = pygame.Rect(200, 200, 100, 100)
+
+targets = [
+    {'pos': (size[0] // 2, size[1] // 2)}
+]
+
+emitters = []
+radius = 10
+font = pygame.font.Font(None, 25)
 
 particles = []
 drag =False
@@ -114,6 +113,8 @@ while True:
         # Click and drag targets
         if event.type == pygame.MOUSEBUTTONDOWN:
             mouse_x, mouse_y = pygame.mouse.get_pos()
+
+            # Check for targets
             for target in targets:
                 if (mouse_x - target['pos'][0])**2 + (mouse_y - target['pos'][1]) ** 2 <= radius **2:
                     offset_x = target['pos'][0] - mouse_x
@@ -121,10 +122,21 @@ while True:
                     target['selected'] = True
                     target['offset'] = (offset_x, offset_y)
 
+            # Check for emitters
+            for emitter in emitters:
+                if (mouse_x - emitter['pos'][0])**2 + (mouse_y - emitter['pos'][1]) ** 2 <= radius **2:
+                    offset_x = emitter['pos'][0] - mouse_x
+                    offset_y = emitter['pos'][1] - mouse_y
+                    emitter['selected'] = True
+                    emitter['offset'] = (offset_x, offset_y)
+
         elif event.type == pygame.MOUSEBUTTONUP:
             # Deselect all circles
             for target in targets:
                 target['selected'] = False
+
+            for emitter in emitters:
+                emitter['selected'] = False
 
         elif event.type == pygame.MOUSEMOTION:
                 mouse_x, mouse_y = pygame.mouse.get_pos()
@@ -132,6 +144,10 @@ while True:
                 for target in targets:
                     if target.get('selected', False):
                         target['pos']  = (mouse_x + target['offset'][0], mouse_y + target['offset'][1])
+
+                for emitter in emitters:
+                    if emitter.get('selected', False):
+                        emitter['pos']  = (mouse_x + emitter['offset'][0], mouse_y + emitter['offset'][1])
 
         # Add targets or delete targets
         if event.type == pygame.KEYDOWN:
@@ -146,17 +162,19 @@ while True:
     # Clear previous screen
     screen.fill('Grey')
 
+
+    em1 = pygame.Rect(100, 200, 30, 30)
     # Spawn from edges
-    particles.append(Particle(10, 10))
-    particles.append(Particle(10, size[1] - 10))
-    particles.append(Particle(size[0] - 10, size[1]- 10))
-    particles.append(Particle(size[0] - 10, 10))
+    particles.append(Particle(100, 200))
+    # particles.append(Particle(10, size[1] - 10))
+    # particles.append(Particle(size[0] - 10, size[1]- 10))
+    # particles.append(Particle(size[0] - 10, 10))
 
     # Spawn from top, bottom, left, right
-    particles.append(Particle(10, size[1] // 2))
-    particles.append(Particle(size[0] // 2, 10))
-    particles.append(Particle(size[0] // 2, size[1] - 10))
-    particles.append(Particle(size[0] - 10, size[1]//2))
+    # particles.append(Particle(10, size[1] // 2))
+    # particles.append(Particle(size[0] // 2, 10))
+    # particles.append(Particle(size[0] // 2, size[1] - 10))
+    # particles.append(Particle(size[0] - 10, size[1]//2))
 
     # Draw targets
     for target in targets:
@@ -174,6 +192,7 @@ while True:
         particle.draw()
 
 
+    pygame.draw.rect(screen, 'White', em1)
     fps = clock.get_fps()
     # pygame.display.set_caption(f"Particle System - FPS: {fps}")
 
