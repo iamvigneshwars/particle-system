@@ -33,8 +33,7 @@ class Particle:
             self.xv += math.cos(angle) 
             self.yv += math.sin(angle) 
 
-    def move(self):
-
+    def move(self, dt):
         dx = target[0] - self.x
         dy = target[1] - self.y
         distance = math.sqrt(dx**2 + dy**2)
@@ -50,9 +49,8 @@ class Particle:
         if self.y < 0 or self.y > SIZE[1] : self.yv *= -1
 
         self.collision()
-
-        self.xv *= 0.999
-        self.yv *= 0.999
+        self.xv *= 0.99
+        self.yv *= 0.99
         # self.life -= 1
 
         if distance < 50: 
@@ -89,8 +87,9 @@ while True:
         if not rectangle.collidepoint(pygame.mouse.get_pos()):
             particles.append(Particle(*pygame.mouse.get_pos()))
 
+    dt = clock.tick(60) / 1000
     for part in particles:
-        part.move()
+        part.move(dt)
         part.draw()
 
     target_surf = pygame.draw.circle(screen, 'Black', target, 10)
@@ -98,5 +97,4 @@ while True:
     part_count = font.render(f"Count: {len(particles)}", False, 'White')
     screen.blit(part_count, (20, 20))
 
-    clock.tick(60)
     pygame.display.update()
