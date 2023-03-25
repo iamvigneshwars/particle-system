@@ -9,6 +9,7 @@ size = (1000, 800)
 fps = 60
 
 screen = pygame.display.set_mode(size)
+pygame.display.set_caption("Particle System")
 clock  = pygame.time.Clock()
 
 # platform_surf = pygame.Surface((600, 100))
@@ -57,7 +58,7 @@ class Particle:
     #         velocity -= 2 * dot_product * normal
     #         self.vx, self.vy = velocity.x, velocity.y
 
-    def move(self):
+    def move(self, dt):
 
         # Find the showest target
         distance = sys.maxsize
@@ -164,14 +165,20 @@ while True:
     # remove dead particles
     particles = [particle for particle in particles if particle.life > 0]
 
+
+    dt = clock.tick(60) / 1000.0
+
     # Move and draw particles
     for particle in particles:
-        particle.move()
+        particle.move(dt)
         particle.draw()
+
+
+    fps = clock.get_fps()
+    # pygame.display.set_caption(f"Particle System - FPS: {fps}")
 
     # Display particle count
     particle_count = font.render(f"Particles: {len(particles)}", False,'White', 'Black')
     screen.blit(particle_count, (450, 20))
 
-    clock.tick(60)
     pygame.display.update()
